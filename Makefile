@@ -4,6 +4,7 @@
 
 # To-do
 # 1. include conditional statements to detect OS for cross-platform compile operation
+# ^ Done, include arguments "OS=Windows"
 # 2. add some form of version control using parsing of values through "menu(int argc, char *argv[])"
 # ^ https://stackoverflow.com/questions/3024197/what-does-int-argc-char-argv-mean
 
