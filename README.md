@@ -1,2 +1,2 @@
 # psychosis
-Retro 3D game from scratch in progress.
+Retro 3D game from scratch (perpetual WIP)
