@@ -4,25 +4,20 @@
 SDL_Window* window = NULL;
 // Surfaces are rendered by the CPU (meaning software rendered), "contains pixels of an image along with all data needed to render it"
 // The following renderer is the rendered surface shown in the mainwindow
-SDL_Renderer* imageRenderer = NULL;
+SDL_Renderer* renderer = NULL;
 
-// imageTexture = texture used to load png image
-cTexture imageTexture;
+// fpsTexture = texture used to store rendered text, fpsFont = storing umeboshi_.ttf font file for FPS
+cTexture fpsTexture;
+TTF_Font* fpsFont;
 
-// textTexture = texture used to store rendered text, textColor = 8bit RGB values, umeboshiFont = storing umeboshi_.ttf font file
-cTexture textTexture;
-SDL_Color textColor = {0, 0, 0};
-TTF_Font* umeboshiFont;
-
-// timer used to measure time between frames, used for delay to attain FPS lock (inaccurate)
-cTimer framesCapTimer;
-
-// timer used to measure FPS
-cTimer framesCountTimer;
-int framesCount = 0;
+// timer used to measure time between frames, used for delay to attain inaccurate FPS lock
+cTimer frameLimitTimer;
+// timer and count used to measure FPS
+cTimer frameCountTimer;
+int frameCount = 0;
 
 // initialize SDL2 windows and graphics handler, also PNG and TTF dependencies
-bool init(int SCREEN_WIDTH,int SCREEN_HEIGHT){
+bool initGraphics(int SCREEN_WIDTH,int SCREEN_HEIGHT){
     bool success = true;
     if(SDL_Init(SDL_INIT_VIDEO) < 0){
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -41,84 +36,72 @@ bool init(int SCREEN_WIDTH,int SCREEN_HEIGHT){
             success = false;
         }
         else{
-                // create a renderer that is hardware accelerated
-                imageRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            // create a renderer that is hardware accelerated
+            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
         }
         if(TTF_Init() == -1){
             printf("SDL_ttf libraries cannot be initialized! SDL_ttf Error: %s\n", TTF_GetError());
             success = false;
         }
     }
-    success = loadMedia();
-    framesCountTimer.start();
-    framesCapTimer.start();
+    success = initFPSCounter();
     return success;
 }
 
-bool loadMedia(){
-    bool success = true;
-    // load PNG to cTexture class type imageTexture
-    if(!imageTexture.loadFromFile("./media/background.png", imageRenderer)){
-        printf("/media/test.png cannot be loaded!");
-        success = false;
-    }
-    umeboshiFont = TTF_OpenFont("./media/umeboshi_.ttf", 28);
-    if(umeboshiFont == NULL){
-        printf("/media/umeboshi_.ttf cannot be loaded!");
-        success = false;
-    }
-    else{
-        if(!textTexture.loadFromRenderedText("KEK", textColor, imageRenderer)){
-            printf("Failed to render text texture!\n");
-            success = false;
-        }
-    }
-    return success;
+bool initFPSCounter(){
+    frameCountTimer.start();
+    frameLimitTimer.start();
+
+    // load TTF to font, the int behind refers to DPI
+    fpsFont = TTF_OpenFont("./media/umeboshi_.ttf", SCREEN_WIDTH/24);
+    if(fpsFont == NULL) printf("/media/umeboshi_.ttf cannot be loaded!");
+    // sets text color of loaded font texture to 
+    fpsTexture.setTextColor(0, 0, 0, 255);
+    // Change font style, includes TTF_STYLE_NORMAL, TTF_STYLE_BOLD, TTF_STYLE_ITALIC, TTF_STYLE_UNDERLINE, TTF_STYLE_STRIKETHROUGH
+    TTF_SetFontStyle(fpsFont, TTF_STYLE_BOLD);
+    return fpsFont != NULL;
 }
 
-void refreshWindow(){
-    SDL_RenderClear(imageRenderer);
-    // renders the image onto renderer called imageRenderer
-    imageTexture.renderTexture(imageRenderer);
-    // renders the text (the FPS counter in this case)
-    textTexture.loadFromRenderedText(std::to_string(getFPS()), textColor, imageRenderer);
-    // renders the text in imageRenderer at x = 0, y = 0, NULL means it's not a clipped quad, size is ???
-    textTexture.renderSprite(0, 0, NULL, imageRenderer);
-    // refresh renderer to show the latest image in the window
-    SDL_RenderPresent(imageRenderer);
-
-    // frameRemainingTicks is used so that it doesn't change during runtime, used to delay the program for n seconds until next frame at 60hz
-    int frameRemainingTicks = framesCapTimer.getTicks();
-    if(frameRemainingTicks < 1000/60.f) SDL_Delay(1000/60.f - frameRemainingTicks);
-    framesCapTimer.start();
-}
-
-float getFPS(){
-    // this resets the FPS counter every 2.5 seconds, to retain accuracy after program has been running for a long time
-    if(framesCount >= 150){
-        // restart timer to get 0 ticks again
-        framesCountTimer.start();
-        framesCount = 0;
-    }
+void frameCounter(){
     // framesCount is added every render cycle, divided by 1000ms to get FPS
-    float avgFPS = framesCount/(framesCountTimer.getTicks()/1000.f);
-    framesCount++;
-    return avgFPS;
+    int avgFPS = frameCount/(frameCountTimer.getTicks()/1000.f);
+    fpsTexture.renderText(0, 0, std::to_string(avgFPS).append("FPS"), fpsFont);
+    // this resets the FPS counter every 2.5 seconds, to retain accuracy after program has been running for a long time
+    if(frameCount > REFRESH_RATE*2.5){
+        frameCountTimer.start();
+        frameCount = 0;
+    }
+    frameCount++;
 }
 
-void quit(){
-    // Free loaded images
-    imageTexture.clearTexture();
-    textTexture.clearTexture();
+// non-vsync method
+void frameLimiter(){
+    int frameRemainingTicks = frameLimitTimer.getTicks();
+    if(frameRemainingTicks < FRAME_TIME) SDL_Delay(FRAME_TIME - frameRemainingTicks);
+    // restarted frameLimitTimer so that frameRemainingTicks will ideally be between 0 and FRAME_TIME every single loop
+    frameLimitTimer.start();
+}
+
+// this is used to render all graphics wrapper function before game specific renders onto it.
+void refreshGraphics(){
+    frameCounter();
+    frameLimiter();
+    // SDL_Delay(16);
+    SDL_RenderPresent(renderer);
+}
+
+void exitGraphics(){
+    // Free loaded texture
+    fpsTexture.destroyTexture();
     // Free fonts
-    TTF_CloseFont(umeboshiFont);
-    umeboshiFont = NULL;
+    TTF_CloseFont(fpsFont);
+    fpsFont = NULL;
 
     // Destroy window
-    SDL_DestroyRenderer(imageRenderer);
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     window = NULL;
-    imageRenderer = NULL;
+    renderer = NULL;
 
     // Quit SDL subsystems
     TTF_Quit();

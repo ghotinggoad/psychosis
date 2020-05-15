@@ -4,101 +4,69 @@ cTexture::cTexture(){
     texture = NULL;
     textureWidth = 0;
     textureHeight = 0;
+    textColor = {255, 255, 255, 255};
+    SDL_Color keyColor;
 }
 
 cTexture::~cTexture(){
-    clearTexture();
+    destroyTexture();
 }
 
-bool cTexture::loadFromFile(std::string texturePath, SDL_Renderer* gameRenderer){
-    //Get rid of preexisting texture
-    clearTexture();
-
-    //The final texture
-    SDL_Texture* newTexture = NULL;
-
-    //Load image at specified path
-    SDL_Surface* surfaceImageLoaded = IMG_Load( texturePath.c_str());
-    if( surfaceImageLoaded == NULL){
-        printf( "Unable to load image %s! SDL_image Error: %s\n", texturePath.c_str(), IMG_GetError());
-    }
-    else{
-        //Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface(gameRenderer, surfaceImageLoaded);
-        if(newTexture == NULL){
-            printf( "Unable to create texture from %s! SDL Error: %s\n", texturePath.c_str(), SDL_GetError());
-        }
-        else{
-            //Get image dimensions
-            textureWidth = surfaceImageLoaded->w;
-            textureHeight = surfaceImageLoaded->h;
-        }
-        //Get rid of old loaded surface
-        SDL_FreeSurface(surfaceImageLoaded);
-    }
-
-    //Return success
-    texture = newTexture;
-    return texture != NULL;
-}
-
-bool cTexture::loadFromRenderedText(std::string textString, SDL_Color textColor, SDL_Renderer* imageRenderer){
-    clearTexture();
-    
-    SDL_Surface* textSurface = TTF_RenderText_Solid(umeboshiFont, textString.c_str(), textColor);
-    SDL_Texture* newTexture = NULL;
-
-	if(textSurface == NULL)
-	{
-		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
-	}
-	else
-	{
-		//Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface(imageRenderer, textSurface);
-		if(newTexture == NULL )
-		{
-			printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
-		}
-		else
-		{
-			//Get image dimensions
-			textureWidth = textSurface->w;
-			textureHeight = textSurface->h;
-		}
-
-		//Get rid of old surface
-		SDL_FreeSurface(textSurface);
-	}
-    
-    texture = newTexture;
-
-	//Return success
-	return texture != NULL;
-}
-
-void cTexture::clearTexture(){
-    //Free texture if it exists
+void cTexture::destroyTexture(){
+    //free up texture
     if(texture != NULL){
         SDL_DestroyTexture(texture);
         texture = NULL;
         textureWidth = 0;
         textureHeight = 0;
+        textColor = {0, 0, 0, 0};
     }
 }
 
-void cTexture::renderTexture(SDL_Renderer* imageRenderer){
-    SDL_RenderCopy(imageRenderer, texture, NULL, NULL);
+bool cTexture::loadPNG(std::string filePath){
+    // renew texture
+    destroyTexture();
+    // load image into temporary surface
+    SDL_Surface* imageSurfaceTemp = IMG_Load(filePath.c_str());
+    // get image dimensions
+    textureWidth = imageSurfaceTemp -> w;
+    textureHeight = imageSurfaceTemp -> h;
+    // render surface (unoptimized) to texture (optimized data after hardware acceleration)
+    texture = SDL_CreateTextureFromSurface(renderer, imageSurfaceTemp);
+    if(imageSurfaceTemp == NULL) printf("SDL_image failed to load image from %s! SDL Error: %s\n", filePath.c_str(), SDL_GetError());
+    if(texture == NULL) printf("Unable to create texture from %s! SDL Error: %s\n", filePath.c_str(), SDL_GetError());
+    SDL_FreeSurface(imageSurfaceTemp);
+    return texture != NULL;
 }
 
-void cTexture::renderSprite(int x, int y, SDL_Rect* spriteClip, SDL_Renderer* imageRenderer){
-    //Set rendering space and render to screen
-    SDL_Rect renderQuad = {x, y, textureWidth, textureHeight };
+void cTexture::renderTexture(int x, int y, int w, int h, SDL_Rect* spriteClip){
+    // sets coordinates to target renderer as well as texture dimensions
+    SDL_Rect renderTarget = {x, y, w/(1280/SCREEN_WIDTH), h/(960/SCREEN_HEIGHT)};
     if(spriteClip != NULL ){
-        renderQuad.w = spriteClip->w;
-        renderQuad.h = spriteClip->h;
+        renderTarget.w = spriteClip -> w/(1280/SCREEN_WIDTH);
+        renderTarget.h = spriteClip -> h/(960/SCREEN_HEIGHT);
     }
-    SDL_RenderCopy(imageRenderer, texture, spriteClip, &renderQuad);
+    // Copies texture onto renderer with options for "clip data" and basic image transformation.
+    SDL_RenderCopyEx(renderer, texture, spriteClip, &renderTarget, 0.0, NULL, SDL_FLIP_NONE);
+}
+
+void cTexture::renderText(int x, int y, std::string text, TTF_Font* textFont){
+    // TTF_SetFontStyle 
+    destroyTexture();
+    // load UTF8 string into temporary surface
+    SDL_Surface* textSurfaceTemp = TTF_RenderUTF8_Solid(textFont, text.c_str(), textColor);
+    texture = SDL_CreateTextureFromSurface(renderer, textSurfaceTemp);
+    textureWidth = textSurfaceTemp -> w;
+    textureHeight = textSurfaceTemp -> h;
+    SDL_Rect renderQuad = {x, y, textureWidth, textureHeight};
+    SDL_RenderCopyEx(renderer, texture, NULL, &renderQuad, 0.0, NULL, SDL_FLIP_NONE);
+}
+
+void cTexture::setTextColor(int r, int g, int b, int a){
+    textColor.r = r;
+    textColor.g = g;
+    textColor.b = b;
+    textColor.a = a;
 }
 
 int cTexture::getWidth(){

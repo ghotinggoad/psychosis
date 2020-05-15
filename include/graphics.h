@@ -1,10 +1,11 @@
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
+#ifndef _GRAPHICS_H_
+#define _GRAPHICS_H_
 
-bool init(int SCREEN_WIDTH,int SCREEN_HEIGHT);
-bool loadMedia();
-void refreshWindow();
-float getFPS();
-void quit();
+bool initGraphics(int SCREEN_WIDTH,int SCREEN_HEIGHT);
+bool initFPSCounter();
+void frameCounter();
+void frameLimiter();
+void refreshGraphics();
+void exitGraphics();
 
 #endif

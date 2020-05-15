@@ -1,5 +1,5 @@
-#ifndef CTIMER_H
-#define CTIMER_H
+#ifndef _CTIMER_H_
+#define _CTIMER_H_
 
 class cTimer{
     public:
