@@ -39,7 +39,7 @@ bool cTexture::loadPNG(std::string filePath){
     return texture != NULL;
 }
 
-void cTexture::renderTexture(int x, int y, int w, int h, SDL_Rect* spriteClip){
+void cTexture::renderTexture(int x, int y, int w, int h, SDL_Rect* spriteClip, float angle, SDL_Point* centerPoint, SDL_RendererFlip flipState){
     // sets coordinates to target renderer as well as texture dimensions
     SDL_Rect renderTarget = {x, y, w/(1280/SCREEN_WIDTH), h/(960/SCREEN_HEIGHT)};
     if(spriteClip != NULL ){
@@ -47,10 +47,10 @@ void cTexture::renderTexture(int x, int y, int w, int h, SDL_Rect* spriteClip){
         renderTarget.h = spriteClip -> h/(960/SCREEN_HEIGHT);
     }
     // Copies texture onto renderer with options for "clip data" and basic image transformation.
-    SDL_RenderCopyEx(renderer, texture, spriteClip, &renderTarget, 0.0, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopyEx(renderer, texture, spriteClip, &renderTarget, angle, centerPoint, flipState);
 }
 
-void cTexture::renderText(int x, int y, std::string text, TTF_Font* textFont){
+void cTexture::renderText(int x, int y, std::string text, TTF_Font* textFont, float angle, SDL_Point* centerPoint, SDL_RendererFlip flipState){
     // TTF_SetFontStyle 
     destroyTexture();
     // load UTF8 string into temporary surface
@@ -59,7 +59,7 @@ void cTexture::renderText(int x, int y, std::string text, TTF_Font* textFont){
     textureWidth = textSurfaceTemp -> w;
     textureHeight = textSurfaceTemp -> h;
     SDL_Rect renderQuad = {x, y, textureWidth, textureHeight};
-    SDL_RenderCopyEx(renderer, texture, NULL, &renderQuad, 0.0, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopyEx(renderer, texture, NULL, &renderQuad, angle, centerPoint, flipState);
 }
 
 void cTexture::setTextColor(int r, int g, int b, int a){

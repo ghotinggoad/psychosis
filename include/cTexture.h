@@ -12,9 +12,9 @@ class cTexture{
         bool loadPNG(std::string path);
 
         //Renders texture at given point
-        void renderTexture(int x, int y, int w, int h, SDL_Rect* spriteClip);
+        void renderTexture(int x, int y, int w, int h, SDL_Rect* spriteClip, float angle, SDL_Point* centerPoint, SDL_RendererFlip flipState);
 
-        void renderText(int x, int y, std::string textString, TTF_Font* textFont);
+        void renderText(int x, int y, std::string text, TTF_Font* textFont, float angle, SDL_Point* centerPoint, SDL_RendererFlip flipState);
 
         void setTextColor(int r, int g, int b, int a);
 

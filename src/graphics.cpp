@@ -65,7 +65,7 @@ bool initFPSCounter(){
 void frameCounter(){
     // framesCount is added every render cycle, divided by 1000ms to get FPS
     int avgFPS = frameCount/(frameCountTimer.getTicks()/1000.f);
-    fpsTexture.renderText(0, 0, std::to_string(avgFPS).append("FPS"), fpsFont);
+    fpsTexture.renderText(0, 0, std::to_string(avgFPS).append("FPS"), fpsFont, 0.0, NULL, SDL_FLIP_NONE);
     // this resets the FPS counter every 2.5 seconds, to retain accuracy after program has been running for a long time
     if(frameCount > REFRESH_RATE*2.5){
         frameCountTimer.start();
