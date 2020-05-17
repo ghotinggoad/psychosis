@@ -16,7 +16,7 @@ class cTexture{
 
         void renderText(int x, int y, std::string text, TTF_Font* textFont, float angle, SDL_Point* centerPoint, SDL_RendererFlip flipState);
 
-        void setTextColor(int r, int g, int b, int a);
+        void setTextColor(Uint8 r, Uint8 g, Uint8 b);
 
         int getWidth();
         int getHeight();

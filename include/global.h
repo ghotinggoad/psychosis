@@ -3,6 +3,9 @@
 
 #include <stdio.h>
 #include <string>
+#include <vector>
+#include <math.h>
+
 
 #include <SDL.h>
 #include <SDL2/SDL_image.h>

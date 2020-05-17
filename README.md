@@ -15,3 +15,6 @@ http://lazyfoo.net/tutorials/SDL/
 http://nuclear.mutantstargoat.com/articles/make/
 
 https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+
+GOD BLESS javidx9, his tutorial is a god sent.
+https://www.youtube.com/watch?v=ih20l3pJoeU

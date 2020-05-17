@@ -4,8 +4,9 @@ cTexture::cTexture(){
     texture = NULL;
     textureWidth = 0;
     textureHeight = 0;
-    textColor = {255, 255, 255, 255};
-    SDL_Color keyColor;
+    textColor.r = 255;
+    textColor.g = 255;
+    textColor.b = 255;
 }
 
 cTexture::~cTexture(){
@@ -19,7 +20,6 @@ void cTexture::destroyTexture(){
         texture = NULL;
         textureWidth = 0;
         textureHeight = 0;
-        textColor = {0, 0, 0, 0};
     }
 }
 
@@ -65,11 +65,10 @@ void cTexture::renderText(int x, int y, std::string text, TTF_Font* textFont, fl
     SDL_RenderCopyEx(renderer, texture, NULL, &renderQuad, angle, centerPoint, flipState);
 }
 
-void cTexture::setTextColor(int r, int g, int b, int a){
+void cTexture::setTextColor(Uint8 r, Uint8 g, Uint8 b){
     textColor.r = r;
     textColor.g = g;
     textColor.b = b;
-    textColor.a = a;
 }
 
 int cTexture::getWidth(){

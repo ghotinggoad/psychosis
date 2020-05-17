@@ -3,6 +3,7 @@
 
 bool initGraphics(int SCREEN_WIDTH,int SCREEN_HEIGHT);
 bool initGL();
+void rotateCube();
 bool initFPSCounter();
 void frameCounter();
 void frameLimiter();
