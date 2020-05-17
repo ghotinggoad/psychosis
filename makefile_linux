@@ -10,7 +10,7 @@ OBJS=./obj/main.o ./obj/cTexture.o ./obj/graphics.o ./obj/cTimer.o ./obj/game.o
 
 psychosis-window-x86_64 : main.o cTexture.o graphics.o cTimer.o game.o
 # -static-libgcc -static-libstdc++ are required static libraries for cross compilation from Linux to Windows.
-	$(CXX) $(OBJS) -o ./bin/psychosis -I$(INCDIR) -L$(LIBDIR) $(LFLAGS) -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -static-libgcc -static-libstdc++ $(CXXFLAGS)
+	$(CXX) $(OBJS) -o ./bin/psychosis -I$(INCDIR) -L$(LIBDIR) $(LFLAGS) -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lGLEW -lGL -lGLU -static-libgcc -static-libstdc++ $(CXXFLAGS)
 
 main.o : ./src/main.cpp ./include/global.h
 	$(CXX) -c ./src/main.cpp -o ./obj/main.o -I$(INCDIR) -L$(LIBDIR)

@@ -2,9 +2,12 @@
 
 // Window we're rendering to 
 SDL_Window* window = NULL;
+// OpenGL Context
+SDL_GLContext glContext;
 // Surfaces are rendered by the CPU (meaning software rendered), "contains pixels of an image along with all data needed to render it"
 // The following renderer is the rendered surface shown in the mainwindow
 SDL_Renderer* renderer = NULL;
+
 
 // fpsTexture = texture used to store rendered text, fpsFont = storing umeboshi_.ttf font file for FPS
 cTexture fpsTexture;
@@ -44,7 +47,40 @@ bool initGraphics(int SCREEN_WIDTH,int SCREEN_HEIGHT){
             success = false;
         }
     }
+    success = initGL();
     success = initFPSCounter();
+    
+
+    return success;
+}
+
+bool initGL(){
+    bool success = true;
+    GLenum error = GL_NO_ERROR;
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+    glContext = SDL_GL_CreateContext(window);
+    glewExperimental = GL_TRUE;
+
+    glewInit();
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    error = glGetError();
+    if(error != GL_NO_ERROR) success = false;
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    error = glGetError();
+    if(error != GL_NO_ERROR) success = false;
+    SDL_GL_SetSwapInterval(0);
     return success;
 }
 

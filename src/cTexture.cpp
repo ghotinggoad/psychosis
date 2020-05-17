@@ -29,11 +29,14 @@ bool cTexture::loadPNG(std::string filePath){
     // load image into temporary surface
     SDL_Surface* imageSurfaceTemp = IMG_Load(filePath.c_str());
     // get image dimensions
-    textureWidth = imageSurfaceTemp -> w;
-    textureHeight = imageSurfaceTemp -> h;
+    if(imageSurfaceTemp == NULL) printf("SDL_image failed to load image from %s! SDL Error: %s\n", filePath.c_str(), SDL_GetError());
+    // if(imageSurfaceTemp == NULL) SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "ERROR", (filePath + " cannot be found!").c_str(), window);
+    else{
+        textureWidth = imageSurfaceTemp -> w;
+        textureHeight = imageSurfaceTemp -> h;
+    }
     // render surface (unoptimized) to texture (optimized data after hardware acceleration)
     texture = SDL_CreateTextureFromSurface(renderer, imageSurfaceTemp);
-    if(imageSurfaceTemp == NULL) printf("SDL_image failed to load image from %s! SDL Error: %s\n", filePath.c_str(), SDL_GetError());
     if(texture == NULL) printf("Unable to create texture from %s! SDL Error: %s\n", filePath.c_str(), SDL_GetError());
     SDL_FreeSurface(imageSurfaceTemp);
     return texture != NULL;

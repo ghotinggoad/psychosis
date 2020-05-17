@@ -17,8 +17,11 @@ SDL_Event event;
 
 // main() will not compile with mingw32 and SDL, "https://wiki.libsdl.org/FAQWindows#I_get_.22Undefined_reference_to_.27SDL_main.27.22_..." >> miscellaneous
 int main(int argc, char *argv[]){
+    (void)(argc);
+    (void)(argv);
+
     run = initGraphics(SCREEN_WIDTH, SCREEN_HEIGHT);
-    loadImage();
+    run = loadImage();
     
     while(run){
         while(SDL_PollEvent(&event) != 0){

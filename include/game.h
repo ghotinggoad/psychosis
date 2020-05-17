@@ -2,6 +2,6 @@
 #define _GAME_H_
 
 void game();
-void loadImage();
+bool loadImage();
 
 #endif
