@@ -3,28 +3,28 @@
 # -mwindows = no terminal
 CC = x86_64-w64-mingw32-gcc
 CXX = x86_64-w64-mingw32-g++
-CXXFLAGS = -mwindows
+CXXFLAGS =
 LINKER = -lmingw32 -lglfw3 -lopengl32 -luser32 -lgdi32 -lssp -static-libgcc -static-libstdc++
 # replace accordingly if you have development library directory elsewhere
 INCDIR = /usr/x86_64-w64-mingw32/include
 LIBDIR = /usr/x86_64-w64-mingw32/lib
 
 # ./obj = RELATIVE PATH/obj folder
-OBJS=./obj/main.o ./obj/graphics.o ./obj/glad.o
+OBJS=./obj/main.o ./obj/graphics.o ./obj/glad.o ./obj/input.o ./obj/test.o
 
-psychosis-window-x86_64 : main.o graphics.o glad.o
+psychosis-window-x86_64 : main.o graphics.o glad.o input.o test.o
 # -static-libgcc -static-libstdc++ are required static libraries for cross compilation from Linux to Windows.
 	$(CXX) $(OBJS) -o ./bin/psychosis -I$(INCDIR) -L$(LIBDIR) $(LINKER) $(CXXFLAGS)
 
-main.o : ./src/main.cpp ./include/global.h
+main.o : ./src/main.cpp ./include/global.hpp
 	$(CXX) -c ./src/main.cpp -o ./obj/main.o -I$(INCDIR) -L$(LIBDIR)
 
 # %.o = all .o files, %.cpp = all .cpp files
-%.o : ./src/%.cpp ./include/global.h
+%.o : ./src/%.cpp ./include/global.hpp
 
 # $< = ./src/%.cpp (first in list of required files)
 # $@ = %.o (target file)
-# $^ = ./src/%.cpp global.h (all required files)
+# $^ = ./src/%.cpp ./include/global.hpp (all required files)
 	$(CXX) -c $< -o ./obj/$@ -I$(INCDIR)
 
 glad.o : ./src/glad.c ./include/glad/glad.h ./include/KHR/khrplatform.h

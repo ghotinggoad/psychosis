@@ -1,5 +1,0 @@
-.vscode
-
-obj/*
-bin/*
-!bin/media/

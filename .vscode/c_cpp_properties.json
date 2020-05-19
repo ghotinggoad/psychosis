@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": "VS Code WSL",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/x86_64-w64-mingw32/include/SDL2",
+                "/usr/x86_64-w64-mingw32/lib",
+                "/usr/include/SDL2",
+                "/usr/lib"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64",
+            "compilerArgs": [
+                "-lglfw3dll",
+                "-static-libgcc",
+                "-static-libstdc++"
+            ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ],
+    "version": 4
+}

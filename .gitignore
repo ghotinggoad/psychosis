@@ -1,5 +1,7 @@
-.vscode
-
 obj/*
 bin/*
-!bin/media/
+
+reference
+
+!bin/glfw3.dll
+!bin/media/*
