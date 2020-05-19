@@ -11,7 +11,7 @@
 
 psychosis : psychosis-linux-x86_64 psychosis-window-x86_64
 
-psychosis-linux-x86_64 : 
+psychosis-linux-x86_64 :
 	make -f makefile_linux
-psychosis-window-x86_64 : 
+psychosis-window-x86_64 :
 	make -f makefile_windows

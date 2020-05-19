@@ -1,16 +1,20 @@
 # Makefile
 
 # -pie = terminal, -no-pie = no terminal
+CC = gcc
+CXX = g++
 CXXFLAGS = -no-pie
+LINKER = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -static-libgcc -static-libstdc++
+# replace accordingly if you have development library directory elsewhere
 INCDIR = /usr/include
 LIBDIR = /usr/lib
 
 # ./obj = RELATIVE PATH/obj folder
-OBJS=./obj/main.o ./obj/graphics.o
+OBJS=./obj/main.o ./obj/graphics.o ./obj/glad.o
 
-psychosis-window-x86_64 : main.o graphics.o
+psychosis-window-x86_64 : main.o graphics.o glad.o 
 # -static-libgcc -static-libstdc++ are required static libraries for cross compilation from Linux to Windows.
-	$(CXX) $(OBJS) -o ./bin/psychosis -I$(INCDIR) -L$(LIBDIR) $(LFLAGS) -lglfw -static-libgcc -static-libstdc++ $(CXXFLAGS)
+	$(CXX) $(OBJS) -o ./bin/psychosis -I$(INCDIR) -L$(LIBDIR) $(LINKER) $(CXXFLAGS)
 
 main.o : ./src/main.cpp ./include/global.h
 	$(CXX) -c ./src/main.cpp -o ./obj/main.o -I$(INCDIR) -L$(LIBDIR)
@@ -22,3 +26,6 @@ main.o : ./src/main.cpp ./include/global.h
 # $@ = %.o (target file)
 # $^ = ./src/%.cpp global.h (all required files)
 	$(CXX) -c $< -o ./obj/$@ -I$(INCDIR)
+
+glad.o : ./src/glad.c ./include/glad/glad.h ./include/KHR/khrplatform.h
+	$(CC) -c $< -o ./obj/glad.o -I./include/
