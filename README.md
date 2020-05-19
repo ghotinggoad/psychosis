@@ -2,15 +2,18 @@
 Retro 3D game from scratch (perpetual WIP)
 
 TO-DO (in order):
-- ~~60hz FPS Lock with code runtime independent frame refresh rate~~
+- glfw
+- 60hz FPS Lock with code runtime independent frame refresh rate
 - image scaling for multiple resolution (I think I've achieved this, will strike off when I confirm this)
 - sound
-- reimplementation of ~~shitai?~~
+- ~~reimplementation of shitai?~~
+
+### Dependencies
+- glad
+- glfw
 
 ### References
-https://wiki.libsdl.org/
-
-http://lazyfoo.net/tutorials/SDL/
+https://www.glfw.org/docs/
 
 http://nuclear.mutantstargoat.com/articles/make/
 
