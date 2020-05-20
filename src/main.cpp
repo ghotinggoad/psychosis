@@ -26,10 +26,12 @@ int main(int argc, char *argv[]){
     testCode();
 
     while(!glfwWindowShouldClose(window)){
-        testLoop();
         refreshWindow();
+        testLoop();
         glfwPollEvents();
     }
+
+    testQuit();
 
     glfwDestroyWindow(window);
     glfwTerminate();

@@ -15,5 +15,5 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
     double xPosition, yPosition;
     glfwGetCursorPos(window, &xPosition, &yPosition);
 
-    std::cout << xPosition << " " << yPosition << std::endl;
+    // std::cout << xPosition << " " << yPosition << std::endl;
 }

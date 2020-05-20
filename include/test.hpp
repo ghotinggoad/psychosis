@@ -3,5 +3,6 @@
 
 void testCode();
 void testLoop();
+void testQuit();
 
 #endif

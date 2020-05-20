@@ -38,12 +38,9 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void refreshWindow(){
     // clear window contents
-    glClearColor(.2, .2, .2, 1);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
     // put drawing code in here
-
-    // swap buffers
-    glfwSwapBuffers(window);
 }
