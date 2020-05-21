@@ -1,5 +1,5 @@
-#ifndef _GRAPHICS_H_
-#define _GRAPHICS_H_
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
 
 void initGraphics(int SCREEN_WIDTH,int SCREEN_HEIGHT);
 static void error_callback(int error, const char* description);

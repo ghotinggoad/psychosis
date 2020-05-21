@@ -1,16 +1,25 @@
-#ifndef _GLOBAL_H_
-#define _GLOBAL_H_
+#ifndef GLOBAL_H
+#define GLOBAL_H
 
-#include <iostream>
+
 #include <string>
 #include <vector>
 #include <math.h>
 
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include "graphics.hpp"
 #include "input.hpp"
+#include "cShader.hpp"
 
 #include "test.hpp"
 

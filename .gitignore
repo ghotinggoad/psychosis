@@ -5,3 +5,4 @@ reference
 
 !bin/glfw3.dll
 !bin/media/*
+!bin/shaders/*

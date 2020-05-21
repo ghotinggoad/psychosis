@@ -6,21 +6,8 @@
 // id of buffer object that stored array data into the GPU memory
 // id of element object that stores indices that OpenGL uses to decide which vertices to draw
 // stores id of shaderProgram
-unsigned int VAO, VBO, EBO, shaderProgram;
-
-// writing vertex source and compiling of shader program. Vertex = coordinates. Also telling shader to transform vertices of 3 to vertices of 4
-const char *vertexShaderSource = "#version 460 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main(){\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n" // gl_Position, contains the position of the current vertex, think &pointer that points to a vec4 data in memory.
-    "}\0";
-
-// writing fragment source and compiling of shader program. Fragment = color
-const char * fragmentShaderSource = "#version 460 core\n"
-    "out vec4 FragColor;\n"
-    "void main(){\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\0";
+unsigned int VAO, VBO, EBO;
+cShader rgbTriangle;
 
 void testCode(){
     /*
@@ -33,17 +20,34 @@ void testCode(){
     glLineWidth(3);
     */
 
-    // making a float array consisting of vertex information in groups of 3
+    // making a float array consisting of vertex information and colors in groups of 3
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.5f, 0.5f, 0.0f
+        // positions            // colors, only each corner's color is determined, the mixture of colors is automatically done by fragment interpolation
+        -1.0f, -1.0f,  0.0f,     1.0f, 0.0f, 0.0f,
+        -1.0f,  1.0f,  0.0f,     0.0f, 1.0f, 0.0f,
+         1.0f,  1.0f,  0.0f,     0.0f, 0.0f, 1.0f,
+         1.0f, -1.0f,  0.0f,     1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,     0.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f, -1.0f,     1.0f, 0.0f, 1.0f,
+         1.0f,  1.0f, -1.0f,     1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, -1.0f,     0.0f, 0.0f, 0.0f
     };
     unsigned int indices[] = {
         0, 1, 2,
-        1, 2, 3
+        0, 2, 3,
+        1, 4, 0,
+        5, 1, 4,
+        3, 2, 6,
+        6, 7, 3,
+        1, 5, 6,
+        1, 6, 2,
+        4, 5, 7,
+        5, 6, 7,
+        4, 0, 7,
+        3, 7, 0
     };
+
+    rgbTriangle.build("./shaders/triangle.vs", "./shaders/triangle.fs"); // crashes the program without any error
 
 
     // GPU POINTERS AND MEMORY MANAGEMENT
@@ -62,71 +66,38 @@ void testCode(){
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // LINKING VERTEX ATTRIBUTES
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    // idk how to explain this, refer to https://learnopengl.com/Getting-started/Shaders and hover over glVertexAttribPointer()
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // unbind buffers
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-
-
-    // GPU PIPELINE
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    // check success of shader compiling
-    int success;
-    char infoLog[512];
-
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "Error, Vertex Shader compilation failed.\n" << infoLog << std::endl;
-    }
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "Error, Fragment Shader compilation failed.\n" << infoLog << std::endl;
-    }
-
-    // create shader program object, a "final linked version of multiple shaders combined"
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);   //remember to link after attaching
-
-    glGetProgramiv(shaderProgram, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "Error, Shader Program compilation failed.\n" << infoLog << std::endl;
-    }
-
-    // delete shader after linking because they are no longer needed, freeing up VRAM
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
     // affect both front and back faces (3D mode), telling GPU to only draw lines
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //rgbTriangle.use();    // basically do everything of the first few steps of GPU pipeline, vertex & fragment shading.
 }
 
 void testLoop(){
+    // create transformations
+    glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+    transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f)); // offset/shifting
+    transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 1.0f)); // rotating
+
+    // get matrix's uniform location and set matrix
+    rgbTriangle.use();
+    unsigned int transformLoc = glGetUniformLocation(rgbTriangle.ID, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+
     // Called right before drawing
-    glUseProgram(shaderProgram);    // basically do everything of the first few steps of GPU pipeline, vertex & fragment shading.
+    //rgbTriangle.use();
     glBindVertexArray(VAO); // telling the GPU to use vertices data in the Vertex Buffer Object (which is stored together with all attributes info stored in the selected Vertex Array Object)
     // glDrawArrays(GL_TRIANGLES, 0, 3); // telling the GPU to draw the array with primitive triangle, starting index in the array, how many vertices to draw.
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // telling the GPU to draw specific element from the array, how many elements, element pointer data type, starting index
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // telling the GPU to draw specific element from the array, how many elements, element pointer data type, starting index
     glBindVertexArray(0);
     
     // swap buffers
@@ -136,5 +107,4 @@ void testLoop(){
 void testQuit(){
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
 }

@@ -1,5 +1,5 @@
-#ifndef _TEST_H_
-#define _TEST_H_
+#ifndef TEST_H
+#define TEST_H
 
 void testCode();
 void testLoop();
