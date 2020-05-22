@@ -38,7 +38,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void refreshWindow(){
     // clear window contents
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 

@@ -50,7 +50,7 @@ void cShader::build(const char* vertexPath, const char* fragmentPath){
     if(!success)
     {
         glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-        std::cout << "Error, Vertext Shader cannot be compiled.\n" << infoLog << std::endl;
+        std::cout << "Error, Vertext Shader " << vertexPath << " cannot be compiled.\n" << infoLog << std::endl;
     };
     
     // similiar for Fragment Shader
@@ -62,7 +62,7 @@ void cShader::build(const char* vertexPath, const char* fragmentPath){
     if(!success)
     {
         glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-        std::cout << "Error, Fragment Shader cannot be compiled.\n" << infoLog << std::endl;
+        std::cout << "Error, Fragment Shader " << fragmentPath << " cannot be compiled.\n" << infoLog << std::endl;
     };
     
     // shader Program
