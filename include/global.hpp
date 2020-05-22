@@ -21,7 +21,7 @@
 #include "input.hpp"
 #include "cShader.hpp"
 
-#include "test.hpp"
+#include "cubeDemo.hpp"
 
 extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;
