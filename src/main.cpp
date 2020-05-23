@@ -1,21 +1,11 @@
 #include "../include/global.hpp"
 
 
-// designed resolution = resolution game sprites are designed for e.g. resolution of background file that is supposed to fill the screen
-// sprite has designed resolution e.g. 960p , ratio scaling applied with "texture/(designed resolution/target resolution)" e.g. 960/480 = 2
-// designed resolution has been set to 1280*960p for development
-int SCREEN_WIDTH = 800;
-int SCREEN_HEIGHT = 600;
-int REFRESH_RATE = 60;
-float FRAME_TIME = 1000/60.f;
-
-GLFWwindow* window;
-
 int main(int argc, char *argv[]){
     (void)(argc);
     (void)(argv);
 
-    initGraphics(SCREEN_WIDTH, SCREEN_HEIGHT);
+    initGraphics();
     initInput();
 
     const GLubyte* glVersion = glGetString(GL_VERSION);
@@ -26,9 +16,12 @@ int main(int argc, char *argv[]){
     initCube();
 
     while(!glfwWindowShouldClose(window)){
+
         refreshWindow();
         loopCube();
         glfwPollEvents();
+        camera.processKeyMovement();
+        camera.processKeyRotation();
     }
 
     quitCube();

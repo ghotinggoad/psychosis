@@ -13,6 +13,8 @@ unsigned int backgroundTexture, cubeTexture;
 unsigned int VAO2D, VAO3D, VBO2D, VBO3D, EBO2D, EBO3D;
 cShader background, rgbCubeDemo;
 
+// saving 10 locations of the cubes to render
+
 void initCube(){
     /*
     glEnable(GL_DEPTH_TEST);
@@ -106,10 +108,10 @@ void initCube(){
     };
     float vertices2D[] = {
         // position      texture coordinates
-        -1.0f, -1.0f,    0.0f,  1.0f,
-        -1.0f,  1.0f,    0.0f,  0.0f,
-         1.0f, -1.0f,    1.0f,  1.0f,
-         1.0f,  1.0f,    1.0f,  0.0f
+        -1.0f, -1.0f,    0.0f,  0.0f,
+        -1.0f,  1.0f,    0.0f,  1.0f,
+         1.0f, -1.0f,    1.0f,  0.0f,
+         1.0f,  1.0f,    1.0f,  1.0f
     };
     unsigned int indices2D[] = {
         0, 1, 2,
@@ -126,6 +128,7 @@ void initCube(){
 
     // texture loading
     int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load("./media/background.png", &width, &height, &nrChannels, 0); 
     if (data){
         // generate texture from 2D image
@@ -221,12 +224,14 @@ void initCube(){
 
     // affect both front and back faces (3D mode), telling GPU to only draw lines
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //rgbTriangle.use();    // basically do everything of the first few steps of GPU pipeline, vertex & fragment shading.
+
+
 }
 
 void loopCube(){
 
     glDisable(GL_DEPTH_TEST);
+    glPolygonMode(GL_FRONT, GL_FILL);
 
     background.use();
 
@@ -235,39 +240,42 @@ void loopCube(){
     glUniform1i(glGetUniformLocation(background.ID, "backgroundTexture"), 0);
 
     glBindVertexArray(VAO2D);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // telling the GPU to draw specific element from the array, how many elements, element pointer data type, starting index "(void*)(INDEX*sizeof(GLfloat))"
 
 
 
     glEnable(GL_DEPTH_TEST);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // create transformations
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, glm::radians((float) glfwGetTime()*50.0f), glm::vec3(1.0f, 0.0f, 1.0f)); 
-    glm::mat4 view = glm::mat4(1.0f);
-    // note that we're translating the scene in the reverse direction of where we want to move
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f)); 
+
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(71.0f), SCREEN_WIDTH*1.0f / SCREEN_HEIGHT*1.0f, 0.1f, 1000.0f);
 
     // get matrix's uniform location and set matrix
     rgbCubeDemo.use();
-
+    
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, cubeTexture);
     glUniform1i(glGetUniformLocation(rgbCubeDemo.ID, "cubeTexture"), 1);
     
     unsigned int modelLoc = glGetUniformLocation(rgbCubeDemo.ID, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    unsigned int viewLoc = glGetUniformLocation(rgbCubeDemo.ID, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
     unsigned int projectionLoc = glGetUniformLocation(rgbCubeDemo.ID, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glBindVertexArray(VAO3D); // telling the GPU to use vertices data in the Vertex Buffer Object (which is stored together with all attributes info stored in the selected Vertex Array Object)
+    
+    glm::mat4 view = camera.getViewMatrix();
+    // note that we're translating the scene in the reverse direction of where we want to move 
+    unsigned int viewLoc = glGetUniformLocation(rgbCubeDemo.ID, "view");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     // glDrawArrays(GL_TRIANGLES, 0, 3); // telling the GPU to draw the array with primitive triangle, starting index in the array, how many vertices to draw.
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
 
     glBindVertexArray(0);
     

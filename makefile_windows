@@ -3,16 +3,16 @@
 # -mwindows = no terminal
 CC = x86_64-w64-mingw32-gcc
 CXX = x86_64-w64-mingw32-g++
-CXXFLAGS =
+CXXFLAGS = -mwindows
 LINKER = -lmingw32 -lglfw3 -lopengl32 -luser32 -lgdi32 -lssp -static-libgcc -static-libstdc++
 # replace accordingly if you have development library directory elsewhere
 INCDIR = /usr/x86_64-w64-mingw32/include
 LIBDIR = /usr/x86_64-w64-mingw32/lib
 
 # ./obj = RELATIVE PATH/obj folder
-OBJS=./obj/main.o ./obj/graphics.o ./obj/glad.o ./obj/input.o ./obj/cubeDemo.o ./obj/cShader.o
+OBJS=./obj/main.o ./obj/graphics.o ./obj/glad.o ./obj/input.o ./obj/cubeDemo.o ./obj/cShader.o ./obj/cCamera.o
 
-psychosis-window-x86_64 : main.o graphics.o glad.o input.o cubeDemo.o cShader.o
+psychosis-window-x86_64 : main.o graphics.o glad.o input.o cubeDemo.o cShader.o cCamera.o
 # -static-libgcc -static-libstdc++ are required static libraries for cross compilation from Linux to Windows.
 	$(CXX) $(OBJS) -o ./bin/psychosis -I$(INCDIR) -L$(LIBDIR) $(LINKER) $(CXXFLAGS)
 

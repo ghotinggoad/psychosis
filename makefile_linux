@@ -3,16 +3,16 @@
 # -pie = terminal, -no-pie = no terminal
 CC = gcc
 CXX = g++
-CXXFLAGS =
+CXXFLAGS = -no-pie
 LINKER = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -static-libgcc -static-libstdc++
 # replace accordingly if you have development library directory elsewhere
 INCDIR = /usr/include
 LIBDIR = /usr/lib
 
 # ./obj = RELATIVE PATH/obj folder
-OBJS=./obj/main.o ./obj/graphics.o ./obj/glad.o ./obj/input.o ./obj/cubeDemo.o ./obj/cShader.o
+OBJS=./obj/main.o ./obj/graphics.o ./obj/glad.o ./obj/input.o ./obj/cubeDemo.o ./obj/cShader.o ./obj/cCamera.o
 
-psychosis-window-x86_64 : main.o graphics.o glad.o input.o cubeDemo.o cShader.o
+psychosis-window-x86_64 : main.o graphics.o glad.o input.o cubeDemo.o cShader.o cCamera.o
 # -static-libgcc -static-libstdc++ are required static libraries for cross compilation from Linux to Windows.
 	$(CXX) $(OBJS) -o ./bin/psychosis -I$(INCDIR) -L$(LIBDIR) $(LINKER) $(CXXFLAGS)
 

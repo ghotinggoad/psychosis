@@ -21,6 +21,7 @@
 #include "graphics.hpp"
 #include "input.hpp"
 #include "cShader.hpp"
+#include "cCamera.hpp"
 
 #include "cubeDemo.hpp"
 
@@ -30,5 +31,7 @@ extern int REFRESH_RATE;
 extern float FRAME_TIME;
 
 extern GLFWwindow* window;
+extern cCamera camera;
+
 
 #endif
