@@ -3,7 +3,7 @@
 # -pie = terminal, -no-pie = no terminal
 CC = gcc
 CXX = g++
-CXXFLAGS = -no-pie
+CXXFLAGS =
 LINKER = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -static-libgcc -static-libstdc++
 # replace accordingly if you have development library directory elsewhere
 INCDIR = /usr/include

@@ -1,14 +1,16 @@
 #include "../include/global.hpp"
 
+//store movements in 4 directions, 5 is used to track movement for x & z axises
+int movementFlags[5];
 
 cCamera::cCamera(){
     pitch = 0.0f;
     yaw = 0.0f; // -90.0f, I still don't know why the tutorial says this is needed.
     // roll = 0.0f; only needed for 6DOF games
 
-    movementSpeed = 0.1f;
+    movementSpeed = 0.05f;
     keySensitivity = 1.0f;
-    mouseSensitivity = 0.1f;
+    mouseSensitivity = 0.05f;
 
     //fov = 71.0f;
     worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -25,10 +27,19 @@ glm::mat4 cCamera::getViewMatrix(){
 
 // this basically checks for 2 factor, which direction and what speed it's supposed to move right now
 void cCamera::setMovement(int movementNum, float movementMultiplier){
-    // limits movement only to x and z axis
-    if(movementNum < 4) movementVelocity[movementNum] = glm::vec3(movementSpeed*movementMultiplier, 0.0f, movementSpeed*movementMultiplier);
+    movementFlags[movementNum] = (int)movementMultiplier;
+    movementFlags[4] = abs(movementFlags[0] - movementFlags[1]) + abs(movementFlags[2] - movementFlags[3]);
+    if(movementNum < 4){
+        if(movementFlags[4] == 2) movementVelocity[movementNum] = glm::vec3(0.7071f*movementSpeed*movementMultiplier, 0.0f, 0.7071f*movementSpeed*movementMultiplier);
+        else movementVelocity[movementNum] = glm::vec3(movementSpeed*movementMultiplier, 0.0f, movementSpeed*movementMultiplier);
+    } 
     // sets camera to normal fps camera for y axis instead of "noclip like camera"
     else movementVelocity[movementNum] = glm::vec3(0.0f, movementSpeed*movementMultiplier, 0.0f);
+}
+
+void cCamera::processKeyMovement(){
+    cameraPosition += (movementVelocity[0]*cameraDirection) - (movementVelocity[1]*cameraDirection) - (movementVelocity[2]*cameraRight) 
+    + (movementVelocity[3]*cameraRight) + movementVelocity[4] - movementVelocity[5];
 }
 
 void cCamera::setRotation(int rotationNum, float rotationMultiplier){
@@ -51,11 +62,6 @@ void cCamera::processMouseRotation(float xoffset, float yoffset){
     if(pitch > 90.0f) pitch = 90.0f;
     else if(pitch < -90.0f) pitch = -90.0f;
     updateViewMatrix();
-}
-
-void cCamera::processKeyMovement(){
-    cameraPosition += (movementVelocity[0]*cameraDirection) - (movementVelocity[1]*cameraDirection) - (movementVelocity[2]*cameraRight) 
-    + (movementVelocity[3]*cameraRight) + movementVelocity[4] - movementVelocity[5];
 }
 
 void cCamera::updateViewMatrix(){

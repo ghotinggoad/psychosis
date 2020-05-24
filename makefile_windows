@@ -3,7 +3,7 @@
 # -mwindows = no terminal
 CC = x86_64-w64-mingw32-gcc
 CXX = x86_64-w64-mingw32-g++
-CXXFLAGS = -mwindows
+CXXFLAGS =
 LINKER = -lmingw32 -lglfw3 -lopengl32 -luser32 -lgdi32 -lssp -static-libgcc -static-libstdc++
 # replace accordingly if you have development library directory elsewhere
 INCDIR = /usr/x86_64-w64-mingw32/include
