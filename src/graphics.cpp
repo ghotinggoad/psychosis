@@ -8,6 +8,10 @@ int SCREEN_WIDTH = 1280;
 int SCREEN_HEIGHT = 720;
 int REFRESH_RATE = 60;
 float FRAME_TIME = 1000/60.f;
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 GLFWwindow* window;
 cCamera camera;
 
@@ -22,8 +26,8 @@ void initGraphics(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     // glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "psychosis", NULL, NULL);  //windowed
-    //window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "psychosis", glfwGetPrimaryMonitor(), NULL);   //fullscreen
+    //window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "psychosis", NULL, NULL);  //windowed
+    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "psychosis", glfwGetPrimaryMonitor(), NULL);   //fullscreen
     if(!window){
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -47,10 +51,11 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }  
 
 void refreshWindow(){
+    float currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
     // clear window contents
     // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
+    lastFrame = currentFrame;
     // put drawing code in here
 }

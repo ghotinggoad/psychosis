@@ -2,13 +2,15 @@
 
 //store movements in 4 directions, 5 is used to track movement for x & z axises
 int movementFlags[5];
+int frameTime;
+int previousFrameTime;
 
 cCamera::cCamera(){
     pitch = 0.0f;
     yaw = 0.0f; // -90.0f, I still don't know why the tutorial says this is needed.
     // roll = 0.0f; only needed for 6DOF games
 
-    movementSpeed = 0.05f;
+    movementSpeed = 2.5f;
     keySensitivity = 1.0f;
     mouseSensitivity = 0.05f;
 
@@ -38,8 +40,8 @@ void cCamera::setMovement(int movementNum, float movementMultiplier){
 }
 
 void cCamera::processKeyMovement(){
-    cameraPosition += (movementVelocity[0]*cameraDirection) - (movementVelocity[1]*cameraDirection) - (movementVelocity[2]*cameraRight) 
-    + (movementVelocity[3]*cameraRight) + movementVelocity[4] - movementVelocity[5];
+    cameraPosition += (movementVelocity[0]*cameraDirection*deltaTime) - (movementVelocity[1]*cameraDirection*deltaTime) - (movementVelocity[2]*cameraRight*deltaTime) 
+    + (movementVelocity[3]*cameraRight*deltaTime) + movementVelocity[4]*deltaTime - movementVelocity[5]*deltaTime;
 }
 
 void cCamera::setRotation(int rotationNum, float rotationMultiplier){

@@ -32,6 +32,6 @@ extern float FRAME_TIME;
 
 extern GLFWwindow* window;
 extern cCamera camera;
-
+extern float deltaTime;
 
 #endif
