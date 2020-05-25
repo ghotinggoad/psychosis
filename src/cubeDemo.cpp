@@ -165,7 +165,7 @@ void initCube(){
     rgbCubeDemo.build("./shaders/demo.vert", "./shaders/demo.frag"); // crashes the program without any error
     background.build("./shaders/background.vert", "./shaders/background.frag");
     lightCube.build("./shaders/cube.vert", "./shaders/light.frag");
-    colorCube.build("./shaders/cube.vert", "./shaders/specular.frag");
+    colorCube.build("./shaders/cube.vert", "./shaders/lighting.frag");
 
     // GPU POINTERS AND MEMORY MANAGEMENT
     glGenVertexArrays(1, &backgroundVAO);
@@ -260,7 +260,9 @@ void loopCube(){
 
 
     // rotating light
-    glm::vec3 lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f - 3); 
+    glm::vec3 lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f - 3);
+    // abs so it doesn't go negative and turn my object invisible
+    glm::vec3 lightColor = glm::vec3(abs(glm::sin(glfwGetTime()/2)), 0.0f, abs(glm::cos(glfwGetTime()/2)));
     
     glBindVertexArray(cubeVAO);
     lightCube.use();
@@ -270,7 +272,7 @@ void loopCube(){
     lightCube.setMat4("projection", projection);
     lightCube.setMat4("view", view);
     lightCube.setMat4("model", model);
-    lightCube.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    lightCube.setVec3("lightColor", lightColor);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -280,8 +282,9 @@ void loopCube(){
     colorCube.setMat4("projection", projection);
     colorCube.setMat4("view", view);
     colorCube.setMat4("model", model);
-    colorCube.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
-    colorCube.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    // object is red but 0.1f for green and blue channels because no objects irl is perfectly red, object doesn't turn black (turns that of ambient) when no red light too.
+    colorCube.setVec3("color", glm::vec3(1.0f, 0.1f, 0.1f));
+    colorCube.setVec3("lightColor", lightColor);
     colorCube.setVec3("lightPosition", lightPosition);
     colorCube.setVec3("cameraPosition", camera.cameraPosition);
     glDrawArrays(GL_TRIANGLES, 0, 36);

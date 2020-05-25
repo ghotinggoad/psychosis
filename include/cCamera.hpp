@@ -20,6 +20,7 @@ class cCamera{
         glm::vec3 cameraPosition;
         glm::vec3 cameraDirection;
         glm::vec3 cameraUp;
+        glm::vec3 cameraFront;  // where you face instead of where you look, 2axis vs 3axis
         glm::vec3 cameraRight;
 
         cCamera();
