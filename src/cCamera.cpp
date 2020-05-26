@@ -1,7 +1,9 @@
 #include "../include/global.hpp"
 
-//store movements in 4 directions, 5 is used to track movement for x & z axises
-int movementFlags[5];
+// movementData[0] to movementData[3] stores the speed multiplier sent by function call
+// movementData[4] stores the total number of keys in the 4 cardinal directions that are pressed
+// movementData[5] stores 2 when diagonal movement is detected, 1 if one button of one axis, 0 if 2 buttons of the same axis or no buttons pressed.
+float movementData[6];
 int frameTime;
 int previousFrameTime;
 
@@ -29,12 +31,18 @@ glm::mat4 cCamera::getViewMatrix(){
 
 // this basically checks for 2 factor, which direction and what speed it's supposed to move right now
 void cCamera::setMovement(int movementNum, float movementMultiplier){
-    movementFlags[movementNum] = (int)movementMultiplier;
-    movementFlags[4] = abs(movementFlags[0] - movementFlags[1]) + abs(movementFlags[2] - movementFlags[3]);
+    // seems a bit too much, should optimize
+    movementData[movementNum] = movementMultiplier;
+    movementData[4] = movementData[0] + movementData[1] + movementData[2] + movementData[3];
+    movementData[5] = abs(movementData[0] - movementData[1]) + abs(movementData[2] - movementData[3]);
     if(movementNum < 4){
-        // camera will not stop moving occasionally when opposite direction keys are pressed simultaneously
-        // happens when 3 buttons are pressed, first button is of another axis eg, WAD, SAD, AWS, DWS
-        if(movementFlags[4] == 2) movementVelocity[movementNum] = glm::vec3(0.7071f*movementSpeed*movementMultiplier, 0.0f, 0.7071f*movementSpeed*movementMultiplier);
+        if(movementData[4] > 2){
+            movementVelocity[0] = glm::vec3(movementSpeed*movementData[0], 0.0f, movementSpeed*movementData[0]);
+            movementVelocity[1] = glm::vec3(movementSpeed*movementData[1], 0.0f, movementSpeed*movementData[1]);
+            movementVelocity[2] = glm::vec3(movementSpeed*movementData[2], 0.0f, movementSpeed*movementData[2]);
+            movementVelocity[3] = glm::vec3(movementSpeed*movementData[3], 0.0f, movementSpeed*movementData[3]);
+        }
+        else if(movementData[5] == 2) movementVelocity[movementNum] = glm::vec3(0.7071f*movementSpeed*movementMultiplier, 0.0f, 0.7071f*movementSpeed*movementMultiplier);
         else movementVelocity[movementNum] = glm::vec3(movementSpeed*movementMultiplier, 0.0f, movementSpeed*movementMultiplier);
     } 
     // sets camera to normal fps camera for y axis instead of "noclip like camera"
@@ -51,7 +59,6 @@ void cCamera::setRotation(int rotationNum, float rotationMultiplier){
 }
 
 void cCamera::processKeyRotation(){
-    //yaw += (rotationVelocity[1]*keySensitivity) - (rotationVelocity[0]*keySensitivity);
     // modulus function so it stays below 360
     yaw = glm::mod(yaw + (rotationVelocity[1]*keySensitivity) - (rotationVelocity[0]*keySensitivity), 360.0f);
     pitch += (rotationVelocity[2]*keySensitivity) - (rotationVelocity[3]*keySensitivity);
