@@ -15,6 +15,7 @@ TO-DO (in order):
 ### Build Dependencies
 - glad 0.1.33 (OpenGL 4.6 Core, 3.3 Core will work fine.)
 - glfw 3.3.2
+- glm 0.9.9.8
 
 ### References
 https://learnopengl.com/

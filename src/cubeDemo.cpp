@@ -10,57 +10,12 @@
 // stores id of shaderProgram
 
 unsigned int backgroundTexture, cubeTexture;
-unsigned int backgroundVAO, demoVAO, cubeVAO, backgroundVBO, demoVBO, cubeVBO, backgroundEBO;
+unsigned int backgroundVAO, cubeVAO, backgroundVBO, cubeVBO, backgroundEBO;
 cShader background, rgbCubeDemo, colorCube, lightCube;
 glm::vec3 lightPos = {1.2f, 1.0f, 2.0f};
 
 void initCube(){
     // making a float array consisting of vertex information and colors in groups of 3
-    float demoVertices[] = {
-        // positions            // colors, only each corner's color is determined, the mixture of colors is automatically done by fragment interpolation
-        -1.0f, -1.0f,  1.0f,    1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-        -1.0f,  1.0f,  1.0f,    0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,    0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f,    1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-         1.0f,  1.0f,  1.0f,    0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-         1.0f, -1.0f,  1.0f,    1.0f, 1.0f, 0.0f,   1.0f, 0.0f,
-
-        -1.0f, -1.0f,  1.0f,    1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f,    1.0f, 1.0f, 0.0f,   1.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,    0.0f, 0.0f, 0.0f,   1.0f, 0.0f,
-         1.0f, -1.0f, -1.0f,    0.0f, 0.0f, 0.0f,   1.0f, 0.0f,
-        -1.0f, -1.0f, -1.0f,    0.0f, 1.0f, 1.0f,   0.0f, 0.0f,
-        -1.0f, -1.0f,  1.0f,    1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
-
-         1.0f, -1.0f, -1.0f,    0.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-        -1.0f, -1.0f, -1.0f,    0.0f, 1.0f, 1.0f,   1.0f, 0.0f,
-        -1.0f,  1.0f, -1.0f,    1.0f, 1.0f, 1.0f,   1.0f, 1.0f,
-        -1.0f,  1.0f, -1.0f,    1.0f, 1.0f, 1.0f,   1.0f, 1.0f,
-         1.0f,  1.0f, -1.0f,    1.0f, 0.0f, 1.0f,   0.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,    0.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-
-        -1.0f,  1.0f, -1.0f,    1.0f, 1.0f, 1.0f,   0.0f, 1.0f,
-         1.0f,  1.0f, -1.0f,    1.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,    0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f,    0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
-        -1.0f,  1.0f,  1.0f,    0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
-        -1.0f,  1.0f, -1.0f,    1.0f, 1.0f, 1.0f,   0.0f, 1.0f,
-
-        -1.0f, -1.0f,  1.0f,    1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,    0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
-        -1.0f,  1.0f, -1.0f,    1.0f, 1.0f, 1.0f,   0.0f, 0.0f,
-        -1.0f,  1.0f, -1.0f,    1.0f, 1.0f, 1.0f,   0.0f, 0.0f,
-        -1.0f, -1.0f, -1.0f,    0.0f, 1.0f, 1.0f,   1.0f, 0.0f,
-        -1.0f, -1.0f,  1.0f,    1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-
-         1.0f,  1.0f,  1.0f,    0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f,    1.0f, 1.0f, 0.0f,   1.0f, 0.0f,
-         1.0f, -1.0f, -1.0f,    0.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,    0.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-         1.0f,  1.0f, -1.0f,    1.0f, 0.0f, 1.0f,   0.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,    0.0f, 0.0f, 1.0f,   0.0f, 0.0f
-    };
-
     float vertices2D[] = {
         // position      texture coordinates
         -1.0f, -1.0f,    0.0f,  0.0f,
@@ -73,49 +28,49 @@ void initCube(){
         1, 2, 3
     };
 
-                            // face's normal vector (a vector that is perpendicular to the face)
     float cubeVertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+        // vertices for face,   // normal              // texture coordinates
+        -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     0.0f, 0.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,     0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,     1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,     1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,     1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,     0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,     0.0f, 0.0f,
 
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,    -1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,    -1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,    -1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,    -1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,    -1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,    -1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
 
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,     1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,     1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,     0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,     0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,     0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,     1.0f, 1.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,     0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,     1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,     1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,     1.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,     0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,     0.0f, 0.0f,
 
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+        -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,     0.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,     1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,     1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,     1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,     0.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,     0.0f, 0.0f
     };
 
     glGenTextures(1, &backgroundTexture);
@@ -162,17 +117,15 @@ void initCube(){
     }
     stbi_image_free(data);
 
-    rgbCubeDemo.build("./shaders/demo.vert", "./shaders/demo.frag"); // crashes the program without any error
+    rgbCubeDemo.build("./shaders/texturedCube.vert", "./shaders/texturedLighting.frag");
     background.build("./shaders/background.vert", "./shaders/background.frag");
-    lightCube.build("./shaders/cube.vert", "./shaders/light.frag");
-    colorCube.build("./shaders/cube.vert", "./shaders/lighting.frag");
+    lightCube.build("./shaders/untexturedCube.vert", "./shaders/light.frag");
+    colorCube.build("./shaders/untexturedCube.vert", "./shaders/untexturedLighting.frag");
 
     // GPU POINTERS AND MEMORY MANAGEMENT
     glGenVertexArrays(1, &backgroundVAO);
-    glGenVertexArrays(1, &demoVAO);
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &backgroundVBO);
-    glGenBuffers(1, &demoVBO);
     glGenBuffers(1, &cubeVBO);
     glGenBuffers(1, &backgroundEBO);
 
@@ -190,30 +143,17 @@ void initCube(){
     printf("2D done.\n");
 
 
-    glBindVertexArray(demoVAO);
-    // selecting the buffer we're currently manipulating, then loading a program array data into the buffer.
-    glBindBuffer(GL_ARRAY_BUFFER, demoVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(demoVertices), demoVertices, GL_STATIC_DRAW);  //GL_STATIC_DRAW, drawn once like background texture, probably sending it to hard to call memaddr
-    // LINKING VERTEX ATTRIBUTES
+    glBindVertexArray(cubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // idk how to explain this, refer to https://learnopengl.com/Getting-started/Shaders and hover over glVertexAttribPointer()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
     glEnableVertexAttribArray(2);
 
     printf("3D done.\n");
-
-
-    glBindVertexArray(cubeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-
     printf("light source done.\n");
 
 
@@ -239,32 +179,14 @@ void loopCube(){
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // telling the GPU to draw specific element from the array, how many elements, element pointer data type, starting index "(void*)(INDEX*sizeof(GLfloat))"
 
 
-
     glEnable(GL_DEPTH_TEST);
 
-    glBindVertexArray(demoVAO); // telling the GPU to use vertices data in the Vertex Buffer Object (which is stored together with all attributes info stored in the selected Vertex Array Object)
-    rgbCubeDemo.use();
-    // create transformations
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 3.0f));
-    model = glm::rotate(model, glm::radians((float) glfwGetTime()*50.0f), glm::vec3(1.0f, 0.0f, 1.0f));
-    // note that we're translating the scene in the reverse direction of where we want to move
-    rgbCubeDemo.setMat4("projection", projection);
-    rgbCubeDemo.setMat4("view", view);
-    rgbCubeDemo.setMat4("model", model);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, cubeTexture);
-    rgbCubeDemo.setInt("cubeTexture", 1);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawArrays(GL_TRIANGLES, 0, 36); // telling the GPU to draw the array with primitive triangle, starting index in the array, how many vertices to draw.
-
-
     // rotating light
-    glm::vec3 lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f - 3);
+    glm::vec3 lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f + 3);
     // abs so it doesn't go negative and turn my object invisible
     glm::vec3 lightColor = glm::vec3(abs(glm::sin(glfwGetTime()/2)), 0.0f, abs(glm::cos(glfwGetTime()/2)));
-    
-    glBindVertexArray(cubeVAO);
+
+    glBindVertexArray(cubeVAO); // telling the GPU to use vertices data in the Vertex Buffer Object (which is stored together with all attributes info stored in the selected Vertex Array Object)
     lightCube.use();
     model = glm::mat4(1.0f);
     model = glm::translate(model, lightPosition);
@@ -275,6 +197,35 @@ void loopCube(){
     lightCube.setVec3("lightColor", lightColor);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // rotating light
+    lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f - 3);
+    
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, lightPosition);
+    model = glm::scale(model, glm::vec3(0.2f));
+    lightCube.setMat4("model", model);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // use cubeVertices now, so don't need to rebind cubeVAO
+    rgbCubeDemo.use();
+    // create transformations
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 3.0f));
+    model = glm::rotate(model, glm::radians((float) glfwGetTime()*50.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+    // note that we're translating the scene in the reverse direction of where we want to move
+    rgbCubeDemo.setMat4("projection", projection);
+    rgbCubeDemo.setMat4("view", view);
+    rgbCubeDemo.setMat4("model", model);
+    rgbCubeDemo.setVec3("lightColor", lightColor);
+    rgbCubeDemo.setVec3("lightPosition", lightPosition);
+    rgbCubeDemo.setVec3("cameraPosition", camera.cameraPosition);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, cubeTexture);
+    rgbCubeDemo.setInt("cubeTexture", 1);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawArrays(GL_TRIANGLES, 0, 36); // telling the GPU to draw the array with primitive triangle, starting index in the array, how many vertices to draw.
 
     colorCube.use();
     model = glm::mat4(1.0f);
@@ -298,9 +249,7 @@ void loopCube(){
 void quitCube(){
     glDeleteVertexArrays(1, &backgroundVAO);
     glDeleteVertexArrays(1, &cubeVAO);
-    glDeleteVertexArrays(1, &demoVAO);
     glDeleteBuffers(1, &backgroundVBO);
-    glDeleteBuffers(1, &demoVBO);
     glDeleteBuffers(1, &cubeVBO);
     glDeleteBuffers(1, &backgroundEBO);
 }
