@@ -9,8 +9,8 @@ int SCREEN_HEIGHT = 720;
 int REFRESH_RATE = 60;
 float FRAME_TIME = 1000/60.f;
 
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
+float frameTime = 0.0f;
+float lastTick = 0.0f;
 
 GLFWwindow* window;
 cCamera camera;
@@ -51,11 +51,11 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }  
 
 void refreshWindow(){
-    float currentFrame = glfwGetTime();
-    deltaTime = currentFrame - lastFrame;
+    float currentTick= glfwGetTime();
+    frameTime = currentTick - lastTick;
     // clear window contents
     // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    lastFrame = currentFrame;
+    lastTick = currentTick;
     // put drawing code in here
 }

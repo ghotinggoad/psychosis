@@ -4,24 +4,19 @@
 // movementData[4] stores the total number of keys in the 4 cardinal directions that are pressed
 // movementData[5] stores 2 when diagonal movement is detected, 1 if one button of one axis, 0 if 2 buttons of the same axis or no buttons pressed.
 float movementData[6];
-int frameTime;
-int previousFrameTime;
 
 cCamera::cCamera(){
+    // camera direction vector for these pitch and yaw values = 1,0,0
     pitch = 0.0f;
-    yaw = 0.0f; // -90.0f, I still don't know why the tutorial says this is needed.
+    yaw = 0.0f;
     // roll = 0.0f; only needed for 6DOF games
 
     movementSpeed = 2.5f;
-    keySensitivity = 1.0f;
+    // maybe i should set the default sensitivity so that circle strafing is possible.
+    keySensitivity = 2.5f;
     mouseSensitivity = 0.05f;
-
-    //fov = 71.0f;
     worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
     cameraPosition = glm::vec3(-5.0f, 0.0f, 0.0f);
-    cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
-    cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    cameraRight = glm::vec3(1.0f, 0.0f, 0.0f);
     updateViewMatrix();
 }
 
@@ -50,8 +45,8 @@ void cCamera::setMovement(int movementNum, float movementMultiplier){
 }
 
 void cCamera::processKeyMovement(){
-    cameraPosition += (movementVelocity[0]*cameraFront*deltaTime) - (movementVelocity[1]*cameraFront*deltaTime) - (movementVelocity[2]*cameraRight*deltaTime) 
-    + (movementVelocity[3]*cameraRight*deltaTime) + movementVelocity[4]*deltaTime - movementVelocity[5]*deltaTime;
+    cameraPosition += (movementVelocity[0]*cameraFront*frameTime) - (movementVelocity[1]*cameraFront*frameTime)  - (movementVelocity[2]*cameraRight*frameTime) 
+    + (movementVelocity[3]*cameraRight*frameTime) + movementVelocity[4]*frameTime - movementVelocity[5]*frameTime;
 }
 
 void cCamera::setRotation(int rotationNum, float rotationMultiplier){
@@ -60,8 +55,8 @@ void cCamera::setRotation(int rotationNum, float rotationMultiplier){
 
 void cCamera::processKeyRotation(){
     // modulus function so it stays below 360
-    yaw = glm::mod(yaw + (rotationVelocity[1]*keySensitivity) - (rotationVelocity[0]*keySensitivity), 360.0f);
-    pitch += (rotationVelocity[2]*keySensitivity) - (rotationVelocity[3]*keySensitivity);
+    yaw = glm::mod(yaw + (rotationVelocity[1]*keySensitivity*frameTime*20) - (rotationVelocity[0]*keySensitivity*frameTime*20), 360.0f);
+    pitch += (rotationVelocity[2]*keySensitivity*frameTime*20) - (rotationVelocity[3]*keySensitivity*frameTime*20);
     if(pitch > 89.0f) pitch = 89.0f;
     else if(pitch < -89.0f) pitch = -89.0f;
     updateViewMatrix();
