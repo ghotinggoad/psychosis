@@ -1,5 +1,5 @@
 #version 460 core
-out vec4 FragColor;
+
 
 struct Material {
     vec3 ambient;
@@ -10,7 +10,6 @@ struct Material {
 
 struct Light {
     vec3 position;
-
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -22,6 +21,8 @@ in vec3 Normal;
 uniform vec3 cameraPosition;
 uniform Material material;
 uniform Light light;
+
+out vec4 FragColor;
 
 void main()
 {

@@ -9,10 +9,12 @@
 // id of element object that stores indices that OpenGL uses to decide which vertices to draw
 // stores id of shaderProgram
 
-unsigned int backgroundTexture, cubeTexture;
+unsigned int backgroundTexture, crateTexture, crateSpecularTexture;
 unsigned int backgroundVAO, cubeVAO, backgroundVBO, cubeVBO, backgroundEBO;
 cShader background, rgbCubeDemo, colorCube, lightCube;
 glm::vec3 lightPos = {1.2f, 1.0f, 2.0f};
+
+unsigned int loadTexture(char const * path);
 
 void initCube(){
     // making a float array consisting of vertex information and colors in groups of 3
@@ -73,49 +75,10 @@ void initCube(){
         -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,     0.0f, 0.0f
     };
 
-    glGenTextures(1, &backgroundTexture);
-    glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-    // texture filtering stuff
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // texture loading
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load("./media/background.png", &width, &height, &nrChannels, 0); 
-    if (data){
-        // generate texture from 2D image
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        // generate mipmap, basically a texture with "perpetual half sizes"
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else{
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    glGenTextures(1, &cubeTexture);
-    glBindTexture(GL_TEXTURE_2D, cubeTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    width = 0;
-    height = 0;
-    nrChannels = 0;
-    stbi_set_flip_vertically_on_load(true);
-    data = stbi_load("./media/cube.png", &width, &height, &nrChannels, 0); 
-    if (data){
-        // generate texture from 2D image
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        // generate mipmap, basically a texture with "perpetual half sizes"
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else{
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+    
+    backgroundTexture = loadTexture("./media/background.png");
+    crateTexture = loadTexture("./media/crate.png");
+    crateSpecularTexture = loadTexture("./media/crate_specular.png");
 
     rgbCubeDemo.build("./shaders/texturedCube.vert", "./shaders/texturedLighting.frag");
     background.build("./shaders/background.vert", "./shaders/background.frag");
@@ -174,18 +137,20 @@ void loopCube(){
     background.use();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-    background.setInt("backgroundTexture", 1);
+    background.setInt("backgroundTexture", 0);
     // affect both front and back faces (3D mode), telling GPU to only draw lines
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // telling the GPU to draw specific element from the array, how many elements, element pointer data type, starting index "(void*)(INDEX*sizeof(GLfloat))"
+    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // telling the GPU to draw specific element from the array, how many elements, element pointer data type, starting index "(void*)(INDEX*sizeof(GLfloat))"
 
 
     glEnable(GL_DEPTH_TEST);
 
     // rotating light
-    glm::vec3 lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f + 3);
+    //glm::vec3 lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f + 3);
+    glm::vec3 lightPosition = glm::vec3(glm::sin(glfwGetTime())*5.0f, 1.0f, 3);
     // abs so it doesn't go negative and turn my object invisible
-    glm::vec3 lightColor = glm::vec3(abs(glm::sin(glfwGetTime()/2)), 0.0f, abs(glm::cos(glfwGetTime()/2)));
+    //glm::vec3 lightColor = glm::vec3(abs(glm::sin(glfwGetTime()/2)), 0.0f, abs(glm::cos(glfwGetTime()/2)));
+    glm::vec3 lightColor = glm::vec3(1.0f);
 
     glBindVertexArray(cubeVAO); // telling the GPU to use vertices data in the Vertex Buffer Object (which is stored together with all attributes info stored in the selected Vertex Array Object)
     lightCube.use();
@@ -204,7 +169,7 @@ void loopCube(){
     // create transformations
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 3.0f));
-    model = glm::rotate(model, glm::radians((float) glfwGetTime()*50.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+    //model = glm::rotate(model, glm::radians((float) glfwGetTime()*50.0f), glm::vec3(1.0f, 0.0f, 1.0f));
     normalMatrixTransform = glm::mat3(1.0f);
     normalMatrixTransform = glm::transpose(glm::inverse(model));
     // note that we're translating the scene in the reverse direction of where we want to move
@@ -212,14 +177,51 @@ void loopCube(){
     rgbCubeDemo.setMat4("view", view);
     rgbCubeDemo.setMat4("model", model);
     rgbCubeDemo.setMat3("normalMatrixTransform", normalMatrixTransform);
-    rgbCubeDemo.setVec3("lightColor", lightColor);
-    rgbCubeDemo.setVec3("lightPosition", lightPosition);
-    rgbCubeDemo.setVec3("cameraPosition", camera.cameraPosition);
+    // light properties
+    glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // decrease the influence
+    glm::vec3 ambientColor = lightColor * glm::vec3(0.1f); // low influence
+    rgbCubeDemo.setVec3("light.ambient", ambientColor);
+    rgbCubeDemo.setVec3("light.diffuse", diffuseColor);
+    rgbCubeDemo.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    rgbCubeDemo.setVec3("light.position", lightPosition);
+    rgbCubeDemo.setFloat("light.constant", 1.0f);
+    rgbCubeDemo.setFloat("light.linear", 0.045f);
+    rgbCubeDemo.setFloat("light.quadratic", 0.0075f);	
+    // material properties
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, cubeTexture);
-    rgbCubeDemo.setInt("cubeTexture", 1);
+    glBindTexture(GL_TEXTURE_2D, crateTexture);
+    rgbCubeDemo.setInt("material.diffuse", 1);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, crateSpecularTexture);
+    rgbCubeDemo.setInt("material.specular", 2);
+    rgbCubeDemo.setFloat("material.shininess", 32.0f);
+    rgbCubeDemo.setVec3("cameraPosition", camera.cameraPosition);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_TRIANGLES, 0, 36); // telling the GPU to draw the array with primitive triangle, starting index in the array, how many vertices to draw.
+
+    lightPosition = glm::vec3(glm::sin(glfwGetTime())*5.0f, 1.0f, 6);
+    lightCube.use();
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, lightPosition);
+    model = glm::scale(model, glm::vec3(0.2f));
+    lightCube.setMat4("model", model);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    rgbCubeDemo.use();
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 6.0f));
+    //model = glm::rotate(model, glm::radians((float) glfwGetTime()*50.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+    normalMatrixTransform = glm::mat3(1.0f);
+    normalMatrixTransform = glm::transpose(glm::inverse(model));
+    rgbCubeDemo.setMat4("model", model);
+    rgbCubeDemo.setVec3("light.position", lightPosition);
+    rgbCubeDemo.setFloat("light.constant", 1.0f);
+    rgbCubeDemo.setFloat("light.linear", 0.0f);
+    rgbCubeDemo.setFloat("light.quadratic", 0.0f);
+    //rgbCubeDemo.setFloat("light.linear", 0.014f);
+    //rgbCubeDemo.setFloat("light.quadratic", 0.0007f);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // rotating light
     lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f - 3);
@@ -245,8 +247,8 @@ void loopCube(){
     // colorCube.setVec3("light.ambient", glm::vec3(1.0f, 0.1f, 0.1f));
     
     // light properties
-    glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // decrease the influence
-    glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
+    diffuseColor = lightColor   * glm::vec3(0.5f); // decrease the influence
+    ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
     colorCube.setVec3("light.ambient", ambientColor);
     colorCube.setVec3("light.diffuse", diffuseColor);
     colorCube.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
@@ -263,6 +265,43 @@ void loopCube(){
     glBindVertexArray(0);
     // swap buffers
     glfwSwapBuffers(window);
+}
+
+unsigned int loadTexture(char const * path)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
 }
 
 void quitCube(){

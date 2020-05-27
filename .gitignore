@@ -4,5 +4,5 @@ bin/*
 reference
 
 !bin/glfw3.dll
-!bin/media/*
+!bin/media/
 !bin/shaders
