@@ -26,10 +26,10 @@ void main(){
     vec3 reflectDirection = reflect(-lightDirection, norm);
 
     float spec = pow(max(dot(cameraPosition, reflectDirection), 0.0), 64);
-    vec3 specular = specularStrength * spec * lightColor;  
+    vec3 specular = specularStrength * spec * lightColor; 
 
 
-    vec4 result = vec4(ambient + diffuse + specular, 1.0f) * texture(cubeTexture, TexCoord);
+    vec3 result = (ambient + diffuse + specular) * texture(cubeTexture, TexCoord).rgb;
 
-    FragColor = result;
+    FragColor = vec4(result, 1.0f);
 }

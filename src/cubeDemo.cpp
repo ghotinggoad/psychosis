@@ -29,7 +29,7 @@ void initCube(){
     };
 
     float cubeVertices[] = {
-        // vertices for face,   // normal              // texture coordinates
+        // vertices for face,   // normal              // texture coordinates (some of the textures are upside down)
         -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     1.0f, 0.0f,
          0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,     1.0f, 1.0f,
@@ -166,6 +166,7 @@ void loopCube(){
     glm::mat4 projection = glm::perspective(glm::radians(71.0f), SCREEN_WIDTH*1.0f / SCREEN_HEIGHT*1.0f, 0.1f, 1000.0f);
     glm::mat4 view = camera.getViewMatrix();
     glm::mat4 model;
+    glm::mat3 normalMatrixTransform;
 
     glDisable(GL_DEPTH_TEST);
 
@@ -198,26 +199,19 @@ void loopCube(){
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    // rotating light
-    lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f - 3);
-    
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, lightPosition);
-    model = glm::scale(model, glm::vec3(0.2f));
-    lightCube.setMat4("model", model);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-
     // use cubeVertices now, so don't need to rebind cubeVAO
     rgbCubeDemo.use();
     // create transformations
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 3.0f));
     model = glm::rotate(model, glm::radians((float) glfwGetTime()*50.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+    normalMatrixTransform = glm::mat3(1.0f);
+    normalMatrixTransform = glm::transpose(glm::inverse(model));
     // note that we're translating the scene in the reverse direction of where we want to move
     rgbCubeDemo.setMat4("projection", projection);
     rgbCubeDemo.setMat4("view", view);
     rgbCubeDemo.setMat4("model", model);
+    colorCube.setMat3("normalMatrixTransform", normalMatrixTransform);
     rgbCubeDemo.setVec3("lightColor", lightColor);
     rgbCubeDemo.setVec3("lightPosition", lightPosition);
     rgbCubeDemo.setVec3("cameraPosition", camera.cameraPosition);
@@ -227,12 +221,25 @@ void loopCube(){
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_TRIANGLES, 0, 36); // telling the GPU to draw the array with primitive triangle, starting index in the array, how many vertices to draw.
 
+    // rotating light
+    lightPosition = glm::vec3(glm::sin(glfwGetTime())*1.5f, 1.0f, glm::cos(glfwGetTime())*1.5f - 3);
+    lightCube.use();
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, lightPosition);
+    model = glm::scale(model, glm::vec3(0.2f));
+    lightCube.setMat4("model", model);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
     colorCube.use();
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));
+    normalMatrixTransform = glm::mat3(1.0f);
+    normalMatrixTransform = glm::transpose(glm::inverse(model));
     colorCube.setMat4("projection", projection);
     colorCube.setMat4("view", view);
     colorCube.setMat4("model", model);
+    colorCube.setMat3("normalMatrixTransform", normalMatrixTransform);
     // object is red but 0.1f for green and blue channels because no objects irl is perfectly red, object doesn't turn black (turns that of ambient) when no red light too.
     colorCube.setVec3("color", glm::vec3(1.0f, 0.1f, 0.1f));
     colorCube.setVec3("lightColor", lightColor);
