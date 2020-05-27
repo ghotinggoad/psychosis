@@ -22,10 +22,10 @@ void main(){
     vec3 diffuse = diff * lightColor;
 
     float specularStrength = 0.5f;
-    vec3 cameraPosition = normalize(cameraPosition - FragPosition);
+    vec3 cameraDirection = normalize(cameraPosition - FragPosition);
     vec3 reflectDirection = reflect(-lightDirection, norm);
 
-    float spec = pow(max(dot(cameraPosition, reflectDirection), 0.0), 64);
+    float spec = pow(max(dot(cameraDirection, reflectDirection), 0.0f), 64);
     vec3 specular = specularStrength * spec * lightColor; 
 
 

@@ -120,7 +120,7 @@ void initCube(){
     rgbCubeDemo.build("./shaders/texturedCube.vert", "./shaders/texturedLighting.frag");
     background.build("./shaders/background.vert", "./shaders/background.frag");
     lightCube.build("./shaders/untexturedCube.vert", "./shaders/light.frag");
-    colorCube.build("./shaders/untexturedCube.vert", "./shaders/untexturedLighting.frag");
+    colorCube.build("./shaders/untexturedCube.vert", "./shaders/material.frag");
 
     // GPU POINTERS AND MEMORY MANAGEMENT
     glGenVertexArrays(1, &backgroundVAO);
@@ -211,7 +211,7 @@ void loopCube(){
     rgbCubeDemo.setMat4("projection", projection);
     rgbCubeDemo.setMat4("view", view);
     rgbCubeDemo.setMat4("model", model);
-    colorCube.setMat3("normalMatrixTransform", normalMatrixTransform);
+    rgbCubeDemo.setMat3("normalMatrixTransform", normalMatrixTransform);
     rgbCubeDemo.setVec3("lightColor", lightColor);
     rgbCubeDemo.setVec3("lightPosition", lightPosition);
     rgbCubeDemo.setVec3("cameraPosition", camera.cameraPosition);
@@ -240,10 +240,22 @@ void loopCube(){
     colorCube.setMat4("view", view);
     colorCube.setMat4("model", model);
     colorCube.setMat3("normalMatrixTransform", normalMatrixTransform);
+
     // object is red but 0.1f for green and blue channels because no objects irl is perfectly red, object doesn't turn black (turns that of ambient) when no red light too.
-    colorCube.setVec3("color", glm::vec3(1.0f, 0.1f, 0.1f));
-    colorCube.setVec3("lightColor", lightColor);
-    colorCube.setVec3("lightPosition", lightPosition);
+    // colorCube.setVec3("light.ambient", glm::vec3(1.0f, 0.1f, 0.1f));
+    
+    // light properties
+    glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // decrease the influence
+    glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
+    colorCube.setVec3("light.ambient", ambientColor);
+    colorCube.setVec3("light.diffuse", diffuseColor);
+    colorCube.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    colorCube.setVec3("light.position", lightPosition);
+    // material properties
+    colorCube.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+    colorCube.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+    colorCube.setVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
+    colorCube.setFloat("material.shininess", 32.0f);
     colorCube.setVec3("cameraPosition", camera.cameraPosition);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     
