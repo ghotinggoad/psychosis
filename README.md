@@ -13,6 +13,13 @@ TO-DO (in order):
 - something like penumbra
 
 ### Build Dependencies
+- build-essential (Ubuntu 20.04)
+- mingw-w64
+- libglfw3-dev
+- libgl1-mesa-dev
+- xorg-dev
+
+### Libraries Used
 - glad 0.1.33 (OpenGL 4.6 Core, 3.3 Core will work fine.)
 - glfw 3.3.2
 - glm 0.9.9.8

@@ -17,6 +17,7 @@ psychosis-window-x86_64 : main.o graphics.o glad.o input.o cubeDemo.o cShader.o 
 	$(CXX) $(OBJS) -o ./bin/psychosis -I$(INCDIR) -L$(LIBDIR) $(LINKER) $(CXXFLAGS)
 
 main.o : ./src/main.cpp ./include/global.hpp
+	mkdir -p obj
 	$(CXX) -c ./src/main.cpp -o ./obj/main.o -I$(INCDIR) -L$(LIBDIR)
 
 # %.o = all .o files, %.cpp = all .cpp files
